@@ -8,11 +8,10 @@ using StarterAssets;
 
 public class ThirdPersonShooterController_script : NetworkBehaviour
 {
-    [SerializeField] private GameObject cameraMountPoint;
-    [SerializeField] private GameObject aimCameraPrefab;
-    [SerializeField] private GameObject mainCameraPrefab;
     [SerializeField] private GameObject playerCameraRoot;
-    private GameObject mainVirtualCamera;
+    [SerializeField]
+    private GameObject followVirtualCamera;
+    [SerializeField]
     private GameObject aimVirtualCamera;
     [SerializeField] private float normalSensitivity;
     [SerializeField] private float aimSensitivity;
@@ -20,51 +19,45 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
     [SerializeField] private Transform pfBulletProjectile;
     [SerializeField] private Transform spawnBulletPosition;
 
+    private Vector3 mouseWorldPosition;
     private ThirdPersonController thirdPersonController;
     private StarterAssetsInputs starterAssetsInputs;
-    private StarterAssetsInputs Controls
-    {
-        get
-        {
-            if(starterAssetsInputs != null) { return starterAssetsInputs;}
-            return starterAssetsInputs = new StarterAssetsInputs();
-        }
-    }
     private Animator animator;
 
     private void Awake() 
     {
-        thirdPersonController = GetComponent<ThirdPersonController>();
-        starterAssetsInputs = GetComponent<StarterAssetsInputs>();
-        animator = GetComponent<Animator>();
+
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        if(!IsOwner){ return; }
+        if(IsLocalPlayer)
+        {
+            enabled = true;
+
+
+            thirdPersonController = GetComponent<ThirdPersonController>();
+            starterAssetsInputs = GetComponent<StarterAssetsInputs>();
+            animator = GetComponent<Animator>();
+
+            followVirtualCamera = thirdPersonController.GetFollowCamera();
+            aimVirtualCamera = thirdPersonController.GetAimCamera();
+
+            followVirtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerCameraRoot.transform;
+
+            aimVirtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerCameraRoot.transform;
             
-        mainVirtualCamera = Instantiate(mainCameraPrefab);
-        aimVirtualCamera = Instantiate(aimCameraPrefab);
+        } else 
+        {
+            enabled = false;
+        }
 
-        mainVirtualCamera.gameObject.transform.parent = cameraMountPoint.transform;
-        mainVirtualCamera.gameObject.transform.position = cameraMountPoint.transform.position;
-        mainVirtualCamera.gameObject.transform.rotation = cameraMountPoint.transform.rotation;
-        mainVirtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerCameraRoot.transform;
 
-        aimVirtualCamera.gameObject.transform.parent = cameraMountPoint.transform;
-        aimVirtualCamera.gameObject.transform.position = cameraMountPoint.transform.position;
-        aimVirtualCamera.gameObject.transform.rotation = cameraMountPoint.transform.rotation;
-        aimVirtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerCameraRoot.transform;
-        
 
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(!IsOwner){ return; }
-
         Vector3 mouseWorldPosition = Vector3.zero;
         Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
@@ -87,12 +80,12 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
             transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
 
-            if (starterAssetsInputs.shoot)
+            /*if (starterAssetsInputs.shoot)
             {
                 Vector3 aimDir = (mouseWorldPosition - spawnBulletPosition.position).normalized;
                 Instantiate(pfBulletProjectile, spawnBulletPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
                 starterAssetsInputs.shoot = false;
-            }
+            }*/
         } 
         else 
         {
@@ -102,6 +95,6 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
 
-        starterAssetsInputs.shoot = false;
+        //starterAssetsInputs.shoot = false;
     }
 }
