@@ -2,6 +2,7 @@
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using Unity.Netcode.Samples;
 using Cinemachine;
 #endif
 
@@ -126,11 +127,11 @@ namespace StarterAssets
 					_aimCamera = GameObject.FindGameObjectWithTag("PlayerAimCamera");
 				}
 
-				enabled = true;
+				//enabled = true;
 
 			} else {
 
-				enabled = false;
+				//enabled = false;
 
 			}
 
@@ -140,13 +141,17 @@ namespace StarterAssets
 				_aimCamera.GetComponent<CameraBehaviour_script>().FollowPlayer(_playerCameraRoot.transform);
 			}
 
-			_hasAnimator = TryGetComponent(out _animator);
+			if (_hasAnimator = TryGetComponent(out _animator)){
+				_animator = GetComponent<Animator>();
+			}
+			
 			_controller = GetComponent<CharacterController>();
 
+			if(IsLocalPlayer){
+				AssignAnimationIDs();
+			}
 
 			AssignInput();
-
-			AssignAnimationIDs();
 
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
@@ -155,19 +160,21 @@ namespace StarterAssets
 
 		private void AssignInput()
 		{
+
 			if (IsClient && IsOwner)
 			{
-				
 				PlayerInput playerInput = gameObject.AddComponent<PlayerInput>();
+
 				playerInput.actions = Resources.Load<InputActionAsset>("StarterAssets");
 				playerInput.defaultActionMap = "Player";
 				playerInput.SwitchCurrentActionMap("Player");
 				playerInput.notificationBehavior = PlayerNotifications.SendMessages;
 
 				playerInput.ActivateInput();
-
-				_input = GetComponent<StarterAssetsInputs>();
 			}
+
+			_input = GetComponent<StarterAssetsInputs>();
+
 		}
 
 		private void Update()

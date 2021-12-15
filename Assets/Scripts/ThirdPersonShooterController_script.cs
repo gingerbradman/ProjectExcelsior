@@ -31,14 +31,16 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
     void Start()
     {
+
+        thirdPersonController = GetComponent<ThirdPersonController>();
+        starterAssetsInputs = GetComponent<StarterAssetsInputs>();
+        animator = GetComponent<Animator>();
+
+
+
         if(IsLocalPlayer)
         {
-            enabled = true;
-
-
-            thirdPersonController = GetComponent<ThirdPersonController>();
-            starterAssetsInputs = GetComponent<StarterAssetsInputs>();
-            animator = GetComponent<Animator>();
+            //enabled = true;
 
             followVirtualCamera = thirdPersonController.GetFollowCamera();
             aimVirtualCamera = thirdPersonController.GetAimCamera();
@@ -49,7 +51,7 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             
         } else 
         {
-            enabled = false;
+            //enabled = false;
         }
 
 
@@ -69,7 +71,11 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
         if(starterAssetsInputs.aim)
         {
-            aimVirtualCamera.gameObject.SetActive(true);
+            if(aimVirtualCamera != null)
+            {
+                aimVirtualCamera.gameObject.SetActive(true);
+            }
+
             thirdPersonController.SetSensitivity(aimSensitivity);
             thirdPersonController.SetRotateOnMove(false);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
@@ -89,7 +95,11 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
         } 
         else 
         {
-            aimVirtualCamera.gameObject.SetActive(false);
+            if(aimVirtualCamera != null)
+            {
+                aimVirtualCamera.gameObject.SetActive(false);
+            }
+            
             thirdPersonController.SetRotateOnMove(true);
             thirdPersonController.SetSensitivity(normalSensitivity);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));

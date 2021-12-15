@@ -1041,7 +1041,7 @@ GameObject:
   - component: {fileID: 6982812146204527121}
   - component: {fileID: -6809770993315877409}
   - component: {fileID: -7303998658890798927}
-  - component: {fileID: 4520409570652462632}
+  - component: {fileID: -7296694442600297051}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -1116,6 +1116,11 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+  _animIDSpeed: 0
+  _animIDGrounded: 0
+  _animIDJump: 0
+  _animIDFreeFall: 0
+  _animIDMotionSpeed: 0
   _playerCameraRoot: {fileID: 8338988566280778634}
 --- !u!114 &5885216827943657505
 MonoBehaviour:
@@ -1267,7 +1272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4520409570652462632
+--- !u!114 &-7296694442600297051
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1280,7 +1285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 6982812146204527121}
-  m_ParameterSendBits: 0
+  m_ParameterSendBits: 31
   m_SendRate: 0.1
 --- !u!1 &4523139366846529165
 GameObject:

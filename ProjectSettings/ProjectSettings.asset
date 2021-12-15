@@ -153,7 +153,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.TestThirdPersonCtrl
+    Standalone: com.Brad.ProjectExcelsior
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -700,7 +700,7 @@ PlayerSettings:
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
-  allowUnsafeCode: 0
+  allowUnsafeCode: 1
   useDeterministicCompilation: 1
   enableRoslynAnalyzers: 1
   additionalIl2CppArgs: 
