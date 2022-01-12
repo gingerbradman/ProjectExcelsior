@@ -209,7 +209,13 @@ namespace StarterAssets
 			// update animator if using character
 			if (_hasAnimator)
 			{
-				_animator.SetBool(_animIDGrounded, Grounded);
+				if(NetworkManager.Singleton.IsServer){
+					_animator.SetBool(_animIDGrounded, Grounded);
+				}
+				else 
+				{
+					SetBoolServerRpc(_animIDGrounded, Grounded);
+				}
 			}
 		}
 
@@ -288,8 +294,15 @@ namespace StarterAssets
 			// update animator if using character
 			if (_hasAnimator)
 			{
-				_animator.SetFloat(_animIDSpeed, _animationBlend);
-				_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+				if(NetworkManager.Singleton.IsServer){
+					_animator.SetFloat(_animIDSpeed, _animationBlend);
+					_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+				}
+				else 
+				{
+					SetFloatServerRpc(_animIDSpeed, _animationBlend);
+					SetFloatServerRpc(_animIDMotionSpeed, inputMagnitude);
+				}
 			}
 		}
 
@@ -303,8 +316,15 @@ namespace StarterAssets
 				// update animator if using character
 				if (_hasAnimator)
 				{
-					_animator.SetBool(_animIDJump, false);
-					_animator.SetBool(_animIDFreeFall, false);
+					if(NetworkManager.Singleton.IsServer){
+						_animator.SetBool(_animIDJump, false);
+						_animator.SetBool(_animIDFreeFall, false);
+					}
+					else
+					{
+						SetBoolServerRpc(_animIDJump, false);
+						SetBoolServerRpc(_animIDFreeFall, false);
+					}
 				}
 
 				// stop our velocity dropping infinitely when grounded
@@ -322,7 +342,13 @@ namespace StarterAssets
 					// update animator if using character
 					if (_hasAnimator)
 					{
-						_animator.SetBool(_animIDJump, true);
+						if(NetworkManager.Singleton.IsServer){
+							_animator.SetBool(_animIDJump, true);
+						}
+						else 
+						{
+							SetBoolServerRpc(_animIDJump, true);
+						}
 					}
 				}
 
@@ -347,7 +373,13 @@ namespace StarterAssets
 					// update animator if using character
 					if (_hasAnimator)
 					{
-						_animator.SetBool(_animIDFreeFall, true);
+						if(NetworkManager.Singleton.IsServer){
+							_animator.SetBool(_animIDFreeFall, true);
+						}
+						else
+						{
+							SetBoolServerRpc(_animIDFreeFall, true);
+						}
 					}
 				}
 
@@ -389,6 +421,18 @@ namespace StarterAssets
 		public void SetRotateOnMove(bool newRotateOnMove)
 		{
 			_rotateOnMove = newRotateOnMove;
+		}
+
+		[ServerRpc]
+		void SetBoolServerRpc(int x, bool y)
+		{
+			_animator.SetBool(x, y);
+		}
+
+		[ServerRpc]
+		void SetFloatServerRpc(int x, float y)
+		{
+			_animator.SetFloat(x, y);
 		}
 	}
 }
