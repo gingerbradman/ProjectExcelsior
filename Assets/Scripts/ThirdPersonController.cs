@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Unity.Netcode;
 using Unity.Netcode.Samples;
+using TMPro;
 using Cinemachine;
 #endif
 
@@ -101,6 +103,11 @@ namespace StarterAssets
 
 		private float Sensitivity;
 		private bool _rotateOnMove = true;
+		private int maximumHealth = 100;
+		[SerializeField]
+		private NetworkVariable<int> health = new NetworkVariable<int>(100);
+		private TextMeshProUGUI healthText;
+    	private Slider healthSlider;
 
 		private void Awake()
 		{
@@ -139,6 +146,9 @@ namespace StarterAssets
 			{
 				_followCamera.GetComponent<CameraBehaviour_script>().FollowPlayer(_playerCameraRoot.transform);
 				_aimCamera.GetComponent<CameraBehaviour_script>().FollowPlayer(_playerCameraRoot.transform);
+        		healthSlider = GameObject.Find("HealthSlider").GetComponent<Slider>();
+				healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
+				UpdateHealth();
 			}
 
 			if (_hasAnimator = TryGetComponent(out _animator)){
@@ -214,7 +224,9 @@ namespace StarterAssets
 				}
 				else 
 				{
-					SetBoolServerRpc(_animIDGrounded, Grounded);
+					if(IsOwner){
+						SetBoolServerRpc(_animIDGrounded, Grounded);
+					}
 				}
 			}
 		}
@@ -300,8 +312,10 @@ namespace StarterAssets
 				}
 				else 
 				{
-					SetFloatServerRpc(_animIDSpeed, _animationBlend);
-					SetFloatServerRpc(_animIDMotionSpeed, inputMagnitude);
+					if(IsOwner){
+						SetFloatServerRpc(_animIDSpeed, _animationBlend);
+						SetFloatServerRpc(_animIDMotionSpeed, inputMagnitude);
+					}
 				}
 			}
 		}
@@ -322,8 +336,10 @@ namespace StarterAssets
 					}
 					else
 					{
-						SetBoolServerRpc(_animIDJump, false);
-						SetBoolServerRpc(_animIDFreeFall, false);
+						if(IsOwner){
+							SetBoolServerRpc(_animIDJump, false);
+							SetBoolServerRpc(_animIDFreeFall, false);
+						}
 					}
 				}
 
@@ -347,7 +363,9 @@ namespace StarterAssets
 						}
 						else 
 						{
-							SetBoolServerRpc(_animIDJump, true);
+							if(IsOwner){
+								SetBoolServerRpc(_animIDJump, true);
+							}
 						}
 					}
 				}
@@ -378,7 +396,9 @@ namespace StarterAssets
 						}
 						else
 						{
-							SetBoolServerRpc(_animIDFreeFall, true);
+							if(IsOwner){
+								SetBoolServerRpc(_animIDFreeFall, true);
+							}
 						}
 					}
 				}
@@ -421,6 +441,51 @@ namespace StarterAssets
 		public void SetRotateOnMove(bool newRotateOnMove)
 		{
 			_rotateOnMove = newRotateOnMove;
+		}
+
+		/*public void InflictDamage(int x)
+		{
+
+			InflictDamageServerRpc(x);
+		
+		}
+		*/
+
+		public void UpdateHealth()
+		{
+			healthSlider.value = health.Value;
+			healthText.text = "Health: " + health.Value + "/" + maximumHealth;
+		}
+
+		public void InflictDamage(int x)
+		{
+			if(IsOwner)
+			{
+				InflictDamageServerRpc(x);
+			}
+		}
+
+		[ServerRpc]
+		public void InflictDamageServerRpc(int x)
+		{			
+			InflictDamageClientRpc(x);
+		}
+
+		[ClientRpc]
+		void InflictDamageClientRpc(int x)
+		{
+			Debug.Log(IsOwner + " is the owner and the id is: " + OwnerClientId);
+
+			if(!IsOwner)
+			{
+				return;
+			}
+
+			Debug.Log("Attacker is Owner");
+			
+			int temp = health.Value;
+			health.Value -= x;
+			UpdateHealth();
 		}
 
 		[ServerRpc]

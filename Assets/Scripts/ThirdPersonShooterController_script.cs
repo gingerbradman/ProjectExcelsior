@@ -4,6 +4,7 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using UnityEngine.UI;
 using StarterAssets;
 
 public class ThirdPersonShooterController_script : NetworkBehaviour
@@ -16,15 +17,20 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
     [SerializeField] private float normalSensitivity;
     [SerializeField] private float aimSensitivity;
     [SerializeField] private LayerMask aimColliderMask = new LayerMask();
-    [SerializeField] private Transform pfBulletProjectile;
-    [SerializeField] private Transform spawnBulletPosition;
+    [SerializeField] private NetworkObject pfArrowProjectile;
+    [SerializeField] private Transform spawnArrowPosition;
+    [SerializeField]
+    private Slider powerSlider;
+    public float fillTime = 1f;
+    private bool chargingShot = false;
+    private bool sliderDirection = false; //false for increasing, true for decreasing
 
     private Vector3 mouseWorldPosition;
     private ThirdPersonController thirdPersonController;
     private StarterAssetsInputs starterAssetsInputs;
     private Animator animator;
 
-    private void Awake() 
+    private void Awake()
     {
 
     }
@@ -35,10 +41,10 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
         thirdPersonController = GetComponent<ThirdPersonController>();
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
         animator = GetComponent<Animator>();
+        powerSlider = GameObject.Find("ArrowPowerSlider").GetComponent<Slider>();
 
 
-
-        if(IsLocalPlayer)
+        if (IsLocalPlayer)
         {
             //enabled = true;
 
@@ -48,14 +54,12 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             followVirtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerCameraRoot.transform;
 
             aimVirtualCamera.GetComponent<CinemachineVirtualCamera>().Follow = playerCameraRoot.transform;
-            
-        } else 
+
+        }
+        else
         {
             //enabled = false;
         }
-
-
-
     }
 
     void Update()
@@ -69,9 +73,9 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             mouseWorldPosition = raycastHit.point;
         }
 
-        if(starterAssetsInputs.aim)
+        if (starterAssetsInputs.aim)
         {
-            if(aimVirtualCamera != null)
+            if (aimVirtualCamera != null)
             {
                 aimVirtualCamera.gameObject.SetActive(true);
             }
@@ -86,25 +90,70 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
             transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
 
-            /*if (starterAssetsInputs.shoot)
+            if (starterAssetsInputs.shoot)
             {
-                Vector3 aimDir = (mouseWorldPosition - spawnBulletPosition.position).normalized;
-                Instantiate(pfBulletProjectile, spawnBulletPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
-                starterAssetsInputs.shoot = false;
-            }*/
-        } 
-        else 
+                //Vector3 aimDir = (mouseWorldPosition - spawnArrowPosition.position).normalized;
+                //Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                //starterAssetsInputs.shoot = false;
+
+                chargingShot = true;
+                powerSlider.value += Time.deltaTime * fillTime;
+
+            }
+            else if (chargingShot == true)
+            {
+                if (NetworkManager.Singleton.IsServer)
+                {
+                    Vector3 aimDir = (mouseWorldPosition - spawnArrowPosition.position).normalized;
+                    NetworkObject clone;
+                    clone = Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                    clone.SpawnWithOwnership(OwnerClientId);
+                    ArrowProjectile_script cloneArrowScript = clone.GetComponent<ArrowProjectile_script>();
+                    cloneArrowScript.SetForce(powerSlider.value * 5);
+                    cloneArrowScript.SetDamage((int)powerSlider.value * 10);
+                    starterAssetsInputs.shoot = false;
+                    chargingShot = false;
+                    powerSlider.value = powerSlider.minValue;
+                }
+                else
+                {
+                    if (IsOwner)
+                    {
+                        Vector3 aimDir = (mouseWorldPosition - spawnArrowPosition.position).normalized;
+                        FireArrowServerRpc(aimDir, powerSlider.value);
+                        starterAssetsInputs.shoot = false;
+                        chargingShot = false;
+                        powerSlider.value = powerSlider.minValue;
+
+                    }
+                }
+
+            }
+        }
+        else
         {
-            if(aimVirtualCamera != null)
+            if (aimVirtualCamera != null)
             {
                 aimVirtualCamera.gameObject.SetActive(false);
             }
-            
+
             thirdPersonController.SetRotateOnMove(true);
             thirdPersonController.SetSensitivity(normalSensitivity);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
 
         //starterAssetsInputs.shoot = false;
+    }
+
+    [ServerRpc]
+    void FireArrowServerRpc(Vector3 aimDirection, float power)
+    {
+        NetworkObject clone;
+        clone = Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDirection, Vector3.up));
+        clone.SpawnWithOwnership(OwnerClientId);
+        ArrowProjectile_script cloneArrowScript = clone.GetComponent<ArrowProjectile_script>();
+        cloneArrowScript.SetForce(power * 5);
+        cloneArrowScript.SetDamage((int)power * 10);
+        
     }
 }

@@ -509,6 +509,37 @@ Transform:
   m_Father: {fileID: 3682205282157455302}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2533409579862908385
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5405575126936348438}
+  m_Layer: 8
+  m_Name: ArrowFirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5405575126936348438
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2533409579862908385}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.534, z: 0.917}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3893294197879345259}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2611587126737048868
 GameObject:
   m_ObjectHideFlags: 0
@@ -1064,6 +1095,7 @@ Transform:
   - {fileID: 8338988566280778637}
   - {fileID: 8002264680419333305}
   - {fileID: 272993188807782130}
+  - {fileID: 5405575126936348438}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1116,11 +1148,6 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
-  _animIDSpeed: 0
-  _animIDGrounded: 0
-  _animIDJump: 0
-  _animIDFreeFall: 0
-  _animIDMotionSpeed: 0
   _playerCameraRoot: {fileID: 8338988566280778634}
 --- !u!114 &5885216827943657505
 MonoBehaviour:
@@ -1156,6 +1183,7 @@ MonoBehaviour:
   jump: 0
   sprint: 0
   aim: 0
+  shoot: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -1222,8 +1250,9 @@ MonoBehaviour:
   aimColliderMask:
     serializedVersion: 2
     m_Bits: 5
-  pfBulletProjectile: {fileID: 0}
-  spawnBulletPosition: {fileID: 0}
+  pfArrowProjectile: {fileID: 2140795990428832784, guid: 4e9a51f7e76dec84ab7070624286bec6, type: 3}
+  spawnArrowPosition: {fileID: 5405575126936348438}
+  powerSlider: {fileID: 0}
 --- !u!95 &6982812146204527121
 Animator:
   serializedVersion: 4
