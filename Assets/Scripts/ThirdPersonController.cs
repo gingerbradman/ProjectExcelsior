@@ -114,6 +114,15 @@ namespace StarterAssets
 
 		}
 
+		private void OnEnable() 
+		{
+			health.OnValueChanged += UpdateHealth;	
+		}
+
+		private void OnDisable() {
+			health.OnValueChanged -= UpdateHealth;
+		}
+
 		private void Start()
 		{
 
@@ -148,7 +157,8 @@ namespace StarterAssets
 				_aimCamera.GetComponent<CameraBehaviour_script>().FollowPlayer(_playerCameraRoot.transform);
         		healthSlider = GameObject.Find("HealthSlider").GetComponent<Slider>();
 				healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
-				UpdateHealth();
+				healthSlider.value = health.Value;
+				healthText.text = "Health: " + health.Value + "/" + maximumHealth;
 			}
 
 			if (_hasAnimator = TryGetComponent(out _animator)){
@@ -443,50 +453,22 @@ namespace StarterAssets
 			_rotateOnMove = newRotateOnMove;
 		}
 
-		/*public void InflictDamage(int x)
+		void UpdateHealth(int oldValue, int newValue)
 		{
-
-			InflictDamageServerRpc(x);
-		
-		}
-		*/
-
-		public void UpdateHealth()
-		{
-			healthSlider.value = health.Value;
-			healthText.text = "Health: " + health.Value + "/" + maximumHealth;
-		}
-
-		public void InflictDamage(int x)
-		{
-			if(IsOwner)
-			{
-				InflictDamageServerRpc(x);
+			if(IsOwner){
+				Debug.Log("Update Health Function");
+				healthSlider.value = newValue;
+				healthText.text = "Health: " + newValue + "/" + maximumHealth;
 			}
 		}
 
-		[ServerRpc]
-		public void InflictDamageServerRpc(int x)
-		{			
-			InflictDamageClientRpc(x);
-		}
-
-		[ClientRpc]
-		void InflictDamageClientRpc(int x)
+		public void TakeDamage(int x)
 		{
-			Debug.Log(IsOwner + " is the owner and the id is: " + OwnerClientId);
+			Debug.Log("TakeDamage Function");
 
-			if(!IsOwner)
-			{
-				return;
-			}
-
-			Debug.Log("Attacker is Owner");
-			
-			int temp = health.Value;
 			health.Value -= x;
-			UpdateHealth();
 		}
+
 
 		[ServerRpc]
 		void SetBoolServerRpc(int x, bool y)

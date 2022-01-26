@@ -17,7 +17,7 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
     [SerializeField] private float normalSensitivity;
     [SerializeField] private float aimSensitivity;
     [SerializeField] private LayerMask aimColliderMask = new LayerMask();
-    [SerializeField] private NetworkObject pfArrowProjectile;
+    [SerializeField] private GameObject pfArrowProjectile;
     [SerializeField] private Transform spawnArrowPosition;
     [SerializeField]
     private Slider powerSlider;
@@ -92,9 +92,6 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
             if (starterAssetsInputs.shoot)
             {
-                //Vector3 aimDir = (mouseWorldPosition - spawnArrowPosition.position).normalized;
-                //Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
-                //starterAssetsInputs.shoot = false;
 
                 chargingShot = true;
                 powerSlider.value += Time.deltaTime * fillTime;
@@ -102,12 +99,12 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             }
             else if (chargingShot == true)
             {
-                if (NetworkManager.Singleton.IsServer)
+                if (IsServer && IsLocalPlayer)
                 {
+                    Debug.Log("Is Server and Local Player");
                     Vector3 aimDir = (mouseWorldPosition - spawnArrowPosition.position).normalized;
-                    NetworkObject clone;
-                    clone = Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
-                    clone.SpawnWithOwnership(OwnerClientId);
+                    GameObject clone = Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                    clone.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
                     ArrowProjectile_script cloneArrowScript = clone.GetComponent<ArrowProjectile_script>();
                     cloneArrowScript.SetForce(powerSlider.value * 5);
                     cloneArrowScript.SetDamage((int)powerSlider.value * 10);
@@ -119,8 +116,9 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
                 {
                     if (IsOwner)
                     {
+                        Debug.Log("Is Owner");
                         Vector3 aimDir = (mouseWorldPosition - spawnArrowPosition.position).normalized;
-                        FireArrowServerRpc(aimDir, powerSlider.value);
+                        FireArrowServerRpc(OwnerClientId, aimDir, powerSlider.value);
                         starterAssetsInputs.shoot = false;
                         chargingShot = false;
                         powerSlider.value = powerSlider.minValue;
@@ -141,19 +139,16 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             thirdPersonController.SetSensitivity(normalSensitivity);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
-
-        //starterAssetsInputs.shoot = false;
     }
 
     [ServerRpc]
-    void FireArrowServerRpc(Vector3 aimDirection, float power)
+    void FireArrowServerRpc(ulong id, Vector3 aimDirection, float power)
     {
-        NetworkObject clone;
-        clone = Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDirection, Vector3.up));
-        clone.SpawnWithOwnership(OwnerClientId);
+        GameObject clone = Instantiate(pfArrowProjectile, spawnArrowPosition.position, Quaternion.LookRotation(aimDirection, Vector3.up));
+        clone.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+        NetworkObject ownerObject = NetworkManager.Singleton.ConnectedClients[id].PlayerObject;
         ArrowProjectile_script cloneArrowScript = clone.GetComponent<ArrowProjectile_script>();
         cloneArrowScript.SetForce(power * 5);
         cloneArrowScript.SetDamage((int)power * 10);
-        
     }
 }
