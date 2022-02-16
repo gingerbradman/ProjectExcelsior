@@ -20,6 +20,8 @@ namespace DapperDino.UMT.Lobby.Networking
 
         public event Action OnUserDisconnectRequested;
 
+        [SerializeField] GameLobbyManager_script lobbyManager;
+
         private void Awake()
         {
             if (instance != null && instance != this)
@@ -58,6 +60,7 @@ namespace DapperDino.UMT.Lobby.Networking
 
         public void StartHost()
         {
+            lobbyManager.StartHost(4);
             NetworkManager.Singleton.StartHost();
 
             RegisterClientMessageHandlers();

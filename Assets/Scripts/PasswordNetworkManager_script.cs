@@ -14,6 +14,8 @@ public class PasswordNetworkManager_script : NetworkBehaviour
     [SerializeField] private GameObject passwordEntryUI;
     [SerializeField] private GameObject leaveButton;
 
+    [SerializeField] private GameLobbyManager_script lobbyManager;
+
     private void Start()
     {
         NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
@@ -33,6 +35,7 @@ public class PasswordNetworkManager_script : NetworkBehaviour
     public void Host()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        lobbyManager.StartHost(4);
         NetworkManager.Singleton.StartHost();
         SceneManager.LoadScene("LobbyScene");
         

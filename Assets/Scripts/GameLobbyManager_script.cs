@@ -26,10 +26,21 @@ public class GameLobbyManager_script : MonoBehaviour
 		}
 
 		DontDestroyOnLoad(gameObject);
+
+
+		try
+		{
+			Steamworks.SteamClient.Init( 480, true);
+		}
+		catch
+		{
+			Debug.Log("Steam Client has not initialized!");
+		}
 	}
 
 	private void Start()
     {
+
 
 #if UNITY_EDITOR
 		Debug.unityLogger.logEnabled = true;
@@ -37,8 +48,11 @@ public class GameLobbyManager_script : MonoBehaviour
 		Debug.unityLogger.logEnabled = Debug.isDebugBuild;
 #endif
 
+		
+
 		transport = NetworkManager.Singleton.GetComponent<FacepunchTransport>();
 
+		SteamFriends.OnGameLobbyJoinRequested += OnGameLobbyJoinRequested;
         SteamMatchmaking.OnLobbyCreated += OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
         SteamMatchmaking.OnLobbyMemberJoined += OnLobbyMemberJoined;
@@ -49,6 +63,8 @@ public class GameLobbyManager_script : MonoBehaviour
 
     private void OnDestroy()
 	{
+	 
+		SteamFriends.OnGameLobbyJoinRequested -= OnGameLobbyJoinRequested;
 		SteamMatchmaking.OnLobbyCreated -= OnLobbyCreated;
 		SteamMatchmaking.OnLobbyEntered -= OnLobbyEntered;
 		SteamMatchmaking.OnLobbyMemberJoined -= OnLobbyMemberJoined;
@@ -72,7 +88,7 @@ public class GameLobbyManager_script : MonoBehaviour
 		NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
 		NetworkManager.Singleton.OnServerStarted += OnServerStarted;
 
-		NetworkManager.Singleton.StartHost();
+		Debug.Log("Start Host in GameLobbyManager_script has been reached!");
 
 		CurrentLobby = await SteamMatchmaking.CreateLobbyAsync((int)maxMembers);
     }
@@ -138,7 +154,10 @@ public class GameLobbyManager_script : MonoBehaviour
 
 	#region Steam Callbacks
 
+	private void HandleTransport(SteamId id) => NetworkManager.Singleton.GetComponent<FacepunchTransport>().targetSteamId = id;
+
 	private void OnGameLobbyJoinRequested(Lobby lobby, SteamId id)
+
 	{
 		bool isSame = lobby.Owner.Id.Equals(id);
 
@@ -147,6 +166,7 @@ public class GameLobbyManager_script : MonoBehaviour
 		Debug.Log($"IsSame: {isSame}", this);
 
 		StartClient(id);
+		HandleTransport(id);
 	}
 
 	private void OnLobbyInvite(Friend friend, Lobby lobby) => Debug.Log($"You got a invite from {friend.Name}", this);
