@@ -26,16 +26,6 @@ public class GameLobbyManager_script : MonoBehaviour
 		}
 
 		DontDestroyOnLoad(gameObject);
-
-
-		try
-		{
-			Steamworks.SteamClient.Init( 480, true);
-		}
-		catch
-		{
-			Debug.Log("Steam Client has not initialized!");
-		}
 	}
 
 	private void Start()
@@ -87,8 +77,6 @@ public class GameLobbyManager_script : MonoBehaviour
 		NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
 		NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
 		NetworkManager.Singleton.OnServerStarted += OnServerStarted;
-
-		Debug.Log("Start Host in GameLobbyManager_script has been reached!");
 
 		CurrentLobby = await SteamMatchmaking.CreateLobbyAsync((int)maxMembers);
     }

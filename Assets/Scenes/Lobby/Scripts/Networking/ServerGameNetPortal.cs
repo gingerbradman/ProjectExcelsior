@@ -5,6 +5,9 @@ using System.Text;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Netcode.Transports.Facepunch;
+using Steamworks;
+using Steamworks.Data;
 
 namespace DapperDino.UMT.Lobby.Networking
 {
@@ -156,7 +159,7 @@ namespace DapperDino.UMT.Lobby.Networking
             if (!NetworkManager.Singleton.IsHost) { return; }
 
             string clientGuid = Guid.NewGuid().ToString();
-            string playerName = PlayerPrefs.GetString("PlayerName", "Missing Name");
+            string playerName = Steamworks.SteamClient.Name;
 
             clientData.Add(clientGuid, new PlayerData(playerName, NetworkManager.Singleton.LocalClientId));
             clientIdToGuid.Add(NetworkManager.Singleton.LocalClientId, clientGuid);

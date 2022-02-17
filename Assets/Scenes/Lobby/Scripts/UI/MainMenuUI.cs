@@ -6,26 +6,39 @@ namespace DapperDino.UMT.Lobby
 {
     public class MainMenuUI : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private TMP_InputField displayNameInputField;
+
+        [SerializeField]
+        private GameObject hostClientButtons;
+        [SerializeField]
+        private GameObject stopClientButton;
 
         private void Start()
         {
-            PlayerPrefs.GetString("PlayerName");
+
         }
 
         public void OnHostClicked()
         {
-            PlayerPrefs.SetString("PlayerName", displayNameInputField.text);
-
             GameNetPortal.Instance.StartHost();
         }
 
         public void OnClientClicked()
         {
-            PlayerPrefs.SetString("PlayerName", displayNameInputField.text);
-
             ClientGameNetPortal.Instance.StartClient();
+            stopClientButton.SetActive(true);
+            hostClientButtons.SetActive(false);
+        }
+
+        public void OnStopClientClicked()
+        {
+            ClientGameNetPortal.Instance.StopClient();
+            hostClientButtons.SetActive(true);
+            stopClientButton.SetActive(false);
+        }
+
+        public void OnQuitClicked()
+        {
+            Application.Quit();
         }
     }
 }

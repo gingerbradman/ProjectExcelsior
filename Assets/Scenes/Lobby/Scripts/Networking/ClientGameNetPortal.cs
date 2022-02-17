@@ -1,3 +1,6 @@
+using Netcode.Transports.Facepunch;
+using Steamworks;
+using Steamworks.Data;
 using System;
 using System.Text;
 using Unity.Netcode;
@@ -19,6 +22,7 @@ namespace DapperDino.UMT.Lobby.Networking
         public event Action OnNetworkTimedOut;
 
         private GameNetPortal gameNetPortal;
+
 
         private void Awake()
         {
@@ -61,7 +65,8 @@ namespace DapperDino.UMT.Lobby.Networking
             {
                 clientGUID = Guid.NewGuid().ToString(),
                 clientScene = SceneManager.GetActiveScene().buildIndex,
-                playerName = PlayerPrefs.GetString("PlayerName", "Missing Name")
+                playerName = Steamworks.SteamClient.Name
+                //playerName = PlayerPrefs.GetString("PlayerName", "Missing Name")
             });
 
             byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
@@ -69,6 +74,11 @@ namespace DapperDino.UMT.Lobby.Networking
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
 
             NetworkManager.Singleton.StartClient();
+        }
+
+        public void StopClient()
+        {
+            NetworkManager.Singleton.Shutdown();
         }
 
         private void HandleNetworkReadied()

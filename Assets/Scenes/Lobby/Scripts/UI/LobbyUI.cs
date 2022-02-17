@@ -78,7 +78,7 @@ namespace DapperDino.UMT.Lobby.UI
 
             lobbyPlayers.Add(new LobbyPlayerState(
                 clientId,
-                Steamworks.SteamClient.Name,
+                playerData.Value.PlayerName,
                 false
             ));
         }
