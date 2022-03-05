@@ -56,7 +56,7 @@ public class ArrowProjectile_script : NetworkBehaviour
         if(otherNetworkObject.IsOwnedByServer)
         {
             NetworkObject serverPlayer = NetworkManager.Singleton.ConnectedClients[NetworkManager.Singleton.LocalClientId].PlayerObject;
-            serverPlayer.GetComponent<ThirdPersonController>().TakeDamage(damage);
+            serverPlayer.GetComponent<PlayerBase_script>().TakeDamage(damage);
             this.gameObject.GetComponent<NetworkObject>().Despawn();
             return;
         }
@@ -75,7 +75,7 @@ public class ArrowProjectile_script : NetworkBehaviour
         
         if(otherNetworkObject.IsPlayerObject)
         {
-            otherNetworkObject.GetComponent<ThirdPersonController>().TakeDamage(damage);            
+            otherNetworkObject.GetComponent<PlayerBase_script>().TakeDamage(damage);            
         }
     }
 }

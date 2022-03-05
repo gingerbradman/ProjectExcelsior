@@ -18,17 +18,11 @@ public class UIManager_script : MonoBehaviour
     [SerializeField]
     private Button startClientButton;
 
-    [SerializeField]
-    private TextMeshProUGUI playersInGameText;
+    public GameObject debugUICanvas;
 
     private void Awake() 
     {
         Cursor.visible = true;
-    }
-
-    private void Update() 
-    {
-        //playersInGameText.text = $"Players in game: {playerManager_Script.PlayersInGame}";    
     }
 
     private void Start()

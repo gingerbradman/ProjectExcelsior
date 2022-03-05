@@ -28,6 +28,9 @@ namespace DapperDino.UMT.Lobby.Networking
 
         private GameNetPortal gameNetPortal;
 
+        [SerializeField]
+        private GameObject avatarPrefab;
+
         private void Awake()
         {
             if (instance != null && instance != this)
@@ -91,6 +94,21 @@ namespace DapperDino.UMT.Lobby.Networking
             gameInProgress = true;
 
             NetworkManager.Singleton.SceneManager.LoadScene("Playground", LoadSceneMode.Single);
+
+            for (int i = 0; i < clientData.Count; i++)
+            {
+
+                PlayerData? currentPlayer = GetPlayerData((ulong)i);
+
+                if(currentPlayer == null)
+                {
+                    return;
+                }
+
+                GameObject avatar = Instantiate(avatarPrefab, Vector3.zero, Quaternion.identity);
+                avatar.GetComponent<NetworkObject>().ChangeOwnership(currentPlayer.Value.ClientId);
+                avatar.GetComponent<NetworkObject>().Spawn();                
+            }
         }
 
         public void EndRound()

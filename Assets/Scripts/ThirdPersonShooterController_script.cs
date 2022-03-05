@@ -29,6 +29,7 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
     private ThirdPersonController thirdPersonController;
     private StarterAssetsInputs starterAssetsInputs;
     private Animator animator;
+    private GameObject crosshairObject;
 
     private void Awake()
     {
@@ -42,7 +43,8 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
         animator = GetComponent<Animator>();
         powerSlider = GameObject.Find("ArrowPowerSlider").GetComponent<Slider>();
-
+        crosshairObject = GameObject.Find("Crosshair");
+        crosshairObject.SetActive(false);
 
         if (IsLocalPlayer)
         {
@@ -83,6 +85,7 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             thirdPersonController.SetSensitivity(aimSensitivity);
             thirdPersonController.SetRotateOnMove(false);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
+            crosshairObject.SetActive(true);
 
             Vector3 worldAimTarget = mouseWorldPosition;
             worldAimTarget.y = transform.position.y;
@@ -135,6 +138,7 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
                 aimVirtualCamera.gameObject.SetActive(false);
             }
 
+            crosshairObject.SetActive(false);
             thirdPersonController.SetRotateOnMove(true);
             thirdPersonController.SetSensitivity(normalSensitivity);
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));

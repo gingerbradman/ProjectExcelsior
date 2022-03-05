@@ -103,24 +103,10 @@ namespace StarterAssets
 
 		private float Sensitivity;
 		private bool _rotateOnMove = true;
-		private int maximumHealth = 100;
-		[SerializeField]
-		private NetworkVariable<int> health = new NetworkVariable<int>(100);
-		private TextMeshProUGUI healthText;
-    	private Slider healthSlider;
 
 		private void Awake()
 		{
 
-		}
-
-		private void OnEnable() 
-		{
-			health.OnValueChanged += UpdateHealth;	
-		}
-
-		private void OnDisable() {
-			health.OnValueChanged -= UpdateHealth;
 		}
 
 		private void Start()
@@ -155,10 +141,6 @@ namespace StarterAssets
 			{
 				_followCamera.GetComponent<CameraBehaviour_script>().FollowPlayer(_playerCameraRoot.transform);
 				_aimCamera.GetComponent<CameraBehaviour_script>().FollowPlayer(_playerCameraRoot.transform);
-        		healthSlider = GameObject.Find("HealthSlider").GetComponent<Slider>();
-				healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
-				healthSlider.value = health.Value;
-				healthText.text = "Health: " + health.Value + "/" + maximumHealth;
 			}
 
 			if (_hasAnimator = TryGetComponent(out _animator)){
@@ -452,23 +434,6 @@ namespace StarterAssets
 		{
 			_rotateOnMove = newRotateOnMove;
 		}
-
-		void UpdateHealth(int oldValue, int newValue)
-		{
-			if(IsOwner){
-				Debug.Log("Update Health Function");
-				healthSlider.value = newValue;
-				healthText.text = "Health: " + newValue + "/" + maximumHealth;
-			}
-		}
-
-		public void TakeDamage(int x)
-		{
-			Debug.Log("TakeDamage Function");
-
-			health.Value -= x;
-		}
-
 
 		[ServerRpc]
 		void SetBoolServerRpc(int x, bool y)
