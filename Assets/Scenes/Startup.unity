@@ -361,8 +361,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7558862981182685108, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7558862981182685109, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7558862981182685110, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
+      propertyPath: NetworkConfig.NetworkTransport
+      value: 
+      objectReference: {fileID: 2063751321}
+    - target: {fileID: 7558862981182685110, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
+      propertyPath: NetworkConfig.ConnectionApproval
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7558862981182685111, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
@@ -409,7 +421,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7558862981182685108, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
 --- !u!1 &2063751319 stripped
 GameObject:
@@ -426,5 +439,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d22033827d275b042bbe83f9703df4ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2063751321 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7558862981182685109, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
+  m_PrefabInstance: {fileID: 2063751318}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2063751319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44dd247a00edbfa44b77868d755af6ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
