@@ -69,8 +69,8 @@ public class GameManager_script : NetworkBehaviour
             }
 
             GameObject avatar = Instantiate(avatarPrefab, Vector3.zero, Quaternion.identity);
-            avatar.GetComponent<NetworkObject>().ChangeOwnership(currentPlayer.Value.ClientId);
-            avatar.GetComponent<NetworkObject>().Spawn();
+            avatar.GetComponent<NetworkObject>().SpawnAsPlayerObject(currentPlayer.Value.ClientId);
+            //avatar.GetComponent<NetworkObject>().ChangeOwnership(currentPlayer.Value.ClientId);
         }
     }
 

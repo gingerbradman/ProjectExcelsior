@@ -38,17 +38,14 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
     void Start()
     {
-
-        thirdPersonController = GetComponent<ThirdPersonController>();
-        starterAssetsInputs = GetComponent<StarterAssetsInputs>();
-        animator = GetComponent<Animator>();
-        powerSlider = GameObject.Find("ArrowPowerSlider").GetComponent<Slider>();
-        crosshairObject = GameObject.Find("Crosshair");
-        crosshairObject.SetActive(false);
-
-        if (IsLocalPlayer)
+        if (IsClient && IsOwner)
         {
-            //enabled = true;
+            thirdPersonController = GetComponent<ThirdPersonController>();
+            starterAssetsInputs = GetComponent<StarterAssetsInputs>();
+            animator = GetComponent<Animator>();
+            powerSlider = GameObject.Find("ArrowPowerSlider").GetComponent<Slider>();
+            crosshairObject = GameObject.Find("Crosshair");
+            crosshairObject.SetActive(false);
 
             followVirtualCamera = thirdPersonController.GetFollowCamera();
             aimVirtualCamera = thirdPersonController.GetAimCamera();
@@ -66,6 +63,8 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
     void Update()
     {
+        if(!IsOwner){ return;}
+
         Vector3 mouseWorldPosition = Vector3.zero;
         Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);

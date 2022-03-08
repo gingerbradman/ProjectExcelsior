@@ -18,11 +18,13 @@ public class PlayerBase_script : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gm = GameObject.Find("GameManager").GetComponent<GameManager_script>();
-        healthSlider = GameObject.Find("HealthSlider").GetComponent<Slider>();
-        healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
-        healthSlider.value = health.Value;
-        healthText.text = "Health: " + health.Value + "/" + maximumHealth;
+        if(IsClient && IsOwner){
+            gm = GameObject.Find("GameManager").GetComponent<GameManager_script>();
+            healthSlider = GameObject.Find("HealthSlider").GetComponent<Slider>();
+            healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
+            healthSlider.value = health.Value;
+            healthText.text = "Health: " + health.Value + "/" + maximumHealth;
+        }
     }
 
     private void OnEnable()

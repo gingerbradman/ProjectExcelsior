@@ -112,7 +112,7 @@ namespace StarterAssets
 		private void Start()
 		{
 
-			if(IsLocalPlayer){
+			if(IsClient && IsOwner){
 
 				if (_mainCamera == null)
 				{
@@ -129,11 +129,7 @@ namespace StarterAssets
 					_aimCamera = GameObject.FindGameObjectWithTag("PlayerAimCamera");
 				}
 
-				//enabled = true;
-
 			} else {
-
-				//enabled = false;
 
 			}
 
