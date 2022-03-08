@@ -2996,10 +2996,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b7bef2ac05d4474bb0cd77585108edf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inDebugMode: 1
+  inDebugMode: 0
   numberOfInnocent: 0
   numberOfSkeptic: 0
   numberOfBetrayer: 0
+  avatarPrefab: {fileID: 7775547301532577605, guid: 6774e0b47e241664a84e3fdcb9ce750e, type: 3}
 --- !u!114 &1999558709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3316,6 +3317,10 @@ PrefabInstance:
     - target: {fileID: 7558862981182685105, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
       propertyPath: m_Name
       value: NetworkManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 7558862981182685105, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7558862981182685111, guid: 659ad0464b9f6c340a3cd05090661305, type: 3}
       propertyPath: m_RootOrder

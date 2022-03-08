@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using Unity.Netcode;
 using UnityEngine.UI;
 using TMPro;
-
+using DapperDino.UMT.Lobby.Networking;
 public class GameManager_script : NetworkBehaviour
 {
 
@@ -24,6 +24,8 @@ public class GameManager_script : NetworkBehaviour
     int numberOfBetrayer;
 
     UIManager_script uiManager;
+    [SerializeField]
+    private GameObject avatarPrefab;
 
     void Awake()
     {
@@ -41,15 +43,35 @@ public class GameManager_script : NetworkBehaviour
         gameStatusText = GameObject.Find("Game Status Text").GetComponent<TMP_Text>();
         uiManager = this.GetComponent<UIManager_script>();
 
-        if(inDebugMode)
+        if (inDebugMode)
         {
             uiManager.debugUICanvas.SetActive(true);
+            return;
         }
+
+        SpawnPlayers();
     }
 
     void SpawnPlayers()
     {
+        if(!IsServer){ return; }
 
+        ServerGameNetPortal gameNetPortal = GameObject.Find("NetPortals").GetComponent<ServerGameNetPortal>();
+
+        for (int i = 0; i < gameNetPortal.getClientData().Count; i++)
+        {
+
+            PlayerData? currentPlayer = gameNetPortal.GetPlayerData((ulong)i);
+
+            if (currentPlayer == null)
+            {
+                return;
+            }
+
+            GameObject avatar = Instantiate(avatarPrefab, Vector3.zero, Quaternion.identity);
+            avatar.GetComponent<NetworkObject>().ChangeOwnership(currentPlayer.Value.ClientId);
+            avatar.GetComponent<NetworkObject>().Spawn();
+        }
     }
 
 
@@ -87,7 +109,7 @@ public class GameManager_script : NetworkBehaviour
                 }
                 else
                 {
-                BetrayersWinClientRpc();
+                    BetrayersWinClientRpc();
                 }
             }
             else if (numberOfBetrayer == 0 && numberOfInnocent >= 1)
@@ -98,7 +120,7 @@ public class GameManager_script : NetworkBehaviour
                 }
                 else
                 {
-                InnocentWinClientRpc();
+                    InnocentWinClientRpc();
                 }
             }
         }

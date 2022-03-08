@@ -20,6 +20,7 @@ namespace DapperDino.UMT.Lobby.Networking
         private static ServerGameNetPortal instance;
 
         private Dictionary<string, PlayerData> clientData;
+        public Dictionary<string, PlayerData> getClientData(){ return clientData;} 
         private Dictionary<ulong, string> clientIdToGuid;
         private Dictionary<ulong, int> clientSceneMap;
         private bool gameInProgress;
@@ -27,9 +28,6 @@ namespace DapperDino.UMT.Lobby.Networking
         private const int MaxConnectionPayload = 1024;
 
         private GameNetPortal gameNetPortal;
-
-        [SerializeField]
-        private GameObject avatarPrefab;
 
         private void Awake()
         {
@@ -94,21 +92,6 @@ namespace DapperDino.UMT.Lobby.Networking
             gameInProgress = true;
 
             NetworkManager.Singleton.SceneManager.LoadScene("Playground", LoadSceneMode.Single);
-
-            for (int i = 0; i < clientData.Count; i++)
-            {
-
-                PlayerData? currentPlayer = GetPlayerData((ulong)i);
-
-                if(currentPlayer == null)
-                {
-                    return;
-                }
-
-                GameObject avatar = Instantiate(avatarPrefab, Vector3.zero, Quaternion.identity);
-                avatar.GetComponent<NetworkObject>().ChangeOwnership(currentPlayer.Value.ClientId);
-                avatar.GetComponent<NetworkObject>().Spawn();                
-            }
         }
 
         public void EndRound()
