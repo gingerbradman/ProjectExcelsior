@@ -29,6 +29,11 @@ public class Role_script : NetworkBehaviour
 
     private void OnEnable()
     {
+        if(IsClient && IsOwner){
+            roleText = GameObject.Find("RoleText").GetComponent<TextMeshProUGUI>();
+            roleText.text = RoleParseForText();
+        }
+
         currentNetworkRole.OnValueChanged += UpdateRole;
     }
 

@@ -49,7 +49,7 @@ public class GameManager_script : NetworkBehaviour
             return;
         }
 
-        SpawnPlayers();
+        StartCoroutine(SpawnPlayersWaitCoroutine());
     }
 
     void SpawnPlayers()
@@ -72,6 +72,15 @@ public class GameManager_script : NetworkBehaviour
             avatar.GetComponent<NetworkObject>().SpawnAsPlayerObject(currentPlayer.Value.ClientId);
             //avatar.GetComponent<NetworkObject>().ChangeOwnership(currentPlayer.Value.ClientId);
         }
+    }
+
+    IEnumerator SpawnPlayersWaitCoroutine()
+    {
+        yield return new WaitForSeconds(5);
+
+        SpawnPlayers();
+
+        StopCoroutine(SpawnPlayersWaitCoroutine());
     }
 
 

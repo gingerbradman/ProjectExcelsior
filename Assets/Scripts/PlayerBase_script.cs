@@ -29,6 +29,14 @@ public class PlayerBase_script : NetworkBehaviour
 
     private void OnEnable()
     {
+        if(IsClient && IsOwner){
+            gm = GameObject.Find("GameManager").GetComponent<GameManager_script>();
+            healthSlider = GameObject.Find("HealthSlider").GetComponent<Slider>();
+            healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
+            healthSlider.value = health.Value;
+            healthText.text = "Health: " + health.Value + "/" + maximumHealth;
+        }
+        
         health.OnValueChanged += UpdateHealth;
     }
 
