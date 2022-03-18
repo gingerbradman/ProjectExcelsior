@@ -9,6 +9,7 @@ TagManager:
   - PlayerAimCamera
   - ActivePlayer
   - Spectator
+  - DeadPlayer
   layers:
   - Default
   - TransparentFX

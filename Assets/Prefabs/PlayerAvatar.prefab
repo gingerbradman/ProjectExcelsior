@@ -2003,7 +2003,7 @@ GameObject:
   - component: {fileID: 5483333602402297905}
   - component: {fileID: 7561391278370198144}
   - component: {fileID: 9020420437921800936}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: PlayerAvatar
   m_TagString: ActivePlayer
   m_Icon: {fileID: 0}
@@ -2079,8 +2079,6 @@ MonoBehaviour:
   CameraAngleOverride: 0
   LockCameraPosition: 0
   _playerCameraRoot: {fileID: 2674663357829436958}
-  health:
-    m_InternalValue: 100
 --- !u!114 &506694860231886261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2247,7 +2245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 3910170571238092677}
-  m_ParameterSendBits: 31
+  m_ParameterSendBits: 63
   m_SendRate: 0.1
 --- !u!114 &7561391278370198144
 MonoBehaviour:

@@ -26,6 +26,7 @@ public class GameManager_script : NetworkBehaviour
     UIManager_script uiManager;
     [SerializeField]
     private GameObject avatarPrefab;
+    private List<GameObject> playerRoleList = new List<GameObject>();
 
     void Awake()
     {
@@ -52,7 +53,7 @@ public class GameManager_script : NetworkBehaviour
         StartCoroutine(SpawnPlayersWaitCoroutine());
     }
 
-    void SpawnPlayers()
+    async void SpawnPlayers()
     {
         if(!IsServer){ return; }
 
@@ -70,8 +71,13 @@ public class GameManager_script : NetworkBehaviour
 
             GameObject avatar = Instantiate(avatarPrefab, Vector3.zero, Quaternion.identity);
             avatar.GetComponent<NetworkObject>().SpawnAsPlayerObject(currentPlayer.Value.ClientId);
-            //avatar.GetComponent<NetworkObject>().ChangeOwnership(currentPlayer.Value.ClientId);
+            playerRoleList.Add(avatar);
         }
+
+        AssignBetrayer();
+        AssignSkeptic();
+        playerRoleList.Clear(); //Clear list for next Spawn Players
+
     }
 
     IEnumerator SpawnPlayersWaitCoroutine()
@@ -81,6 +87,15 @@ public class GameManager_script : NetworkBehaviour
         SpawnPlayers();
 
         StopCoroutine(SpawnPlayersWaitCoroutine());
+    }
+
+    IEnumerator NextRoundWaitCoroutine()
+    {
+        yield return new WaitForSeconds(10);
+
+        SpawnPlayers();
+
+        StopCoroutine(NextRoundWaitCoroutine());
     }
 
 
@@ -102,6 +117,7 @@ public class GameManager_script : NetworkBehaviour
                 }
                 if (alivePlayers[i].GetComponent<Role_script>().currentNetworkRole.Value == (int)Role_script.role.Skeptic)
                 {
+                    numberOfInnocent++;
                     numberOfSkeptic++;
                 }
                 if (alivePlayers[i].GetComponent<Role_script>().currentNetworkRole.Value == (int)Role_script.role.Betrayer)
@@ -135,15 +151,31 @@ public class GameManager_script : NetworkBehaviour
         }
     }
 
+    private void AssignBetrayer()
+    {
+        int clientToBecomeBetrayer = Random.Range( 0, playerRoleList.Count + 1); //+1 to include the upper limit; Random Range exludes the maximum
+        playerRoleList[clientToBecomeBetrayer].GetComponent<Role_script>().currentNetworkRole.Value = 2; //2 is the Enum value for the betrayer
+        playerRoleList.Remove(playerRoleList[clientToBecomeBetrayer]);                                   //Remove player from role list, so they aren't reassinged
+    }
+
+    private void AssignSkeptic()
+    {
+        int clientToBecomeSkeptic = Random.Range( 0, playerRoleList.Count + 1); //+1 to include the upper limit; Random Range exludes the maximum
+        playerRoleList[clientToBecomeSkeptic].GetComponent<Role_script>().currentNetworkRole.Value = 1; //1 is the Enum value for the Skeptic
+        playerRoleList.Remove(playerRoleList[clientToBecomeSkeptic]); 
+    }
+
     [ClientRpc]
     private void InnocentWinClientRpc()
     {
         gameStatusText.text = "Innocent Win!";
+        StartCoroutine(NextRoundWaitCoroutine());
     }
 
     [ClientRpc]
     private void BetrayersWinClientRpc()
     {
         gameStatusText.text = "Betrayers Win!";
+        StartCoroutine(NextRoundWaitCoroutine());
     }
 }

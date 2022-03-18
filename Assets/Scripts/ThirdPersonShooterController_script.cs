@@ -74,6 +74,8 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
             mouseWorldPosition = raycastHit.point;
         }
 
+        if(thirdPersonController.GetIsDead()){return;}
+
         if (starterAssetsInputs.aim)
         {
             if (aimVirtualCamera != null)
@@ -109,7 +111,7 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
                     clone.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
                     ArrowProjectile_script cloneArrowScript = clone.GetComponent<ArrowProjectile_script>();
                     cloneArrowScript.SetForce(powerSlider.value * 5);
-                    cloneArrowScript.SetDamage((int)powerSlider.value * 10);
+                    cloneArrowScript.SetDamage((int)powerSlider.value * 50);
                     starterAssetsInputs.shoot = false;
                     chargingShot = false;
                     powerSlider.value = powerSlider.minValue;
@@ -127,7 +129,6 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
 
                     }
                 }
-
             }
         }
         else
@@ -152,6 +153,6 @@ public class ThirdPersonShooterController_script : NetworkBehaviour
         NetworkObject ownerObject = NetworkManager.Singleton.ConnectedClients[id].PlayerObject;
         ArrowProjectile_script cloneArrowScript = clone.GetComponent<ArrowProjectile_script>();
         cloneArrowScript.SetForce(power * 5);
-        cloneArrowScript.SetDamage((int)power * 10);
+        cloneArrowScript.SetDamage((int)power * 50);
     }
 }
