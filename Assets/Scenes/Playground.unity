@@ -3098,6 +3098,7 @@ MonoBehaviour:
   numberOfSkeptic: 0
   numberOfBetrayer: 0
   avatarPrefab: {fileID: 7775547301532577605, guid: 6774e0b47e241664a84e3fdcb9ce750e, type: 3}
+  persistentPlayerPrefab: {fileID: 1681657142556298585, guid: 49aea51f92302e541acd586de763a1dc, type: 3}
 --- !u!114 &1999558709
 MonoBehaviour:
   m_ObjectHideFlags: 0

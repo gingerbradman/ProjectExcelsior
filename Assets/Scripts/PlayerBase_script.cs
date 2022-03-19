@@ -54,6 +54,9 @@ public class PlayerBase_script : NetworkBehaviour
             gm = GameObject.Find("GameManager").GetComponent<GameManager_script>();
             healthSlider = GameObject.Find("HealthSlider").GetComponent<Slider>();
             healthText = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
+            menuGui = GameObject.Find("MenuCanvas");
+            menuGui.SetActive(false);
+            thirdPersonController = GetComponent<ThirdPersonController>();
             healthSlider.value = health.Value;
             healthText.text = "Health: " + health.Value + "/" + maximumHealth;
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Netcode;
 
-public class LeaveGameButton_script : NetworkBehaviour
+public class LeaveGameButton_script : MonoBehaviour
 {
     public void LeaveGame()
     {

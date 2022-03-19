@@ -5,6 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using DapperDino.UMT.Lobby.Networking;
 public class GameManager_script : NetworkBehaviour
@@ -26,6 +27,11 @@ public class GameManager_script : NetworkBehaviour
     UIManager_script uiManager;
     [SerializeField]
     private GameObject avatarPrefab;
+    [SerializeField]
+    private GameObject persistentPlayerPrefab;
+    private ServerGameNetPortal serverGameNetPortal;
+
+    private List<GameObject> playerAvatarList = new List<GameObject>();
     private List<GameObject> playerRoleList = new List<GameObject>();
 
     void Awake()
@@ -43,6 +49,7 @@ public class GameManager_script : NetworkBehaviour
         alivePlayers = GameObject.FindGameObjectsWithTag("ActivePlayer");
         gameStatusText = GameObject.Find("Game Status Text").GetComponent<TMP_Text>();
         uiManager = this.GetComponent<UIManager_script>();
+        serverGameNetPortal = GameObject.Find("NetPortals").GetComponent<ServerGameNetPortal>();
 
         if (inDebugMode)
         {
@@ -57,12 +64,11 @@ public class GameManager_script : NetworkBehaviour
     {
         if(!IsServer){ return; }
 
-        ServerGameNetPortal gameNetPortal = GameObject.Find("NetPortals").GetComponent<ServerGameNetPortal>();
 
-        for (int i = 0; i < gameNetPortal.getClientData().Count; i++)
+        for (int i = 0; i < serverGameNetPortal.getClientData().Count; i++)
         {
 
-            PlayerData? currentPlayer = gameNetPortal.GetPlayerData((ulong)i);
+            PlayerData? currentPlayer = serverGameNetPortal.GetPlayerData((ulong)i);
 
             if (currentPlayer == null)
             {
@@ -72,12 +78,53 @@ public class GameManager_script : NetworkBehaviour
             GameObject avatar = Instantiate(avatarPrefab, Vector3.zero, Quaternion.identity);
             avatar.GetComponent<NetworkObject>().SpawnAsPlayerObject(currentPlayer.Value.ClientId);
             playerRoleList.Add(avatar);
+            playerAvatarList.Add(avatar);
         }
 
         AssignBetrayer();
         AssignSkeptic();
         playerRoleList.Clear(); //Clear list for next Spawn Players
 
+    }
+
+    void SpawnPersistentPlayers()
+    {
+        if(!IsServer){ return; }
+
+
+        for (int i = 0; i < serverGameNetPortal.getClientData().Count; i++)
+        {
+
+            PlayerData? currentPlayer = serverGameNetPortal.GetPlayerData((ulong)i);
+
+            if (currentPlayer == null)
+            {
+                return;
+            }
+
+            GameObject persistentPlayer = Instantiate(persistentPlayerPrefab, Vector3.zero, Quaternion.identity);
+            persistentPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(currentPlayer.Value.ClientId);
+        }
+    }
+
+    void RemoveAvatars()
+    {
+        if(!IsServer){ return; }
+
+        for (int i = 0; i < serverGameNetPortal.getClientData().Count; i++)
+        {
+
+            PlayerData? currentPlayer = serverGameNetPortal.GetPlayerData((ulong)i);
+
+            if (currentPlayer == null)
+            {
+                return;
+            }
+
+            Destroy(playerAvatarList[i].gameObject);
+        }
+
+        playerAvatarList.Clear();
     }
 
     IEnumerator SpawnPlayersWaitCoroutine()
@@ -93,7 +140,13 @@ public class GameManager_script : NetworkBehaviour
     {
         yield return new WaitForSeconds(10);
 
-        SpawnPlayers();
+        if(IsServer){
+
+            SpawnPersistentPlayers();
+            RemoveAvatars();
+            serverGameNetPortal.EndRound();
+
+        }
 
         StopCoroutine(NextRoundWaitCoroutine());
     }
@@ -153,14 +206,14 @@ public class GameManager_script : NetworkBehaviour
 
     private void AssignBetrayer()
     {
-        int clientToBecomeBetrayer = Random.Range( 0, playerRoleList.Count + 1); //+1 to include the upper limit; Random Range exludes the maximum
+        int clientToBecomeBetrayer = Random.Range( 0, playerRoleList.Count); //+1 to include the upper limit; Random Range exludes the maximum
         playerRoleList[clientToBecomeBetrayer].GetComponent<Role_script>().currentNetworkRole.Value = 2; //2 is the Enum value for the betrayer
         playerRoleList.Remove(playerRoleList[clientToBecomeBetrayer]);                                   //Remove player from role list, so they aren't reassinged
     }
 
     private void AssignSkeptic()
     {
-        int clientToBecomeSkeptic = Random.Range( 0, playerRoleList.Count + 1); //+1 to include the upper limit; Random Range exludes the maximum
+        int clientToBecomeSkeptic = Random.Range( 0, playerRoleList.Count); //+1 to include the upper limit; Random Range exludes the maximum
         playerRoleList[clientToBecomeSkeptic].GetComponent<Role_script>().currentNetworkRole.Value = 1; //1 is the Enum value for the Skeptic
         playerRoleList.Remove(playerRoleList[clientToBecomeSkeptic]); 
     }
@@ -177,5 +230,11 @@ public class GameManager_script : NetworkBehaviour
     {
         gameStatusText.text = "Betrayers Win!";
         StartCoroutine(NextRoundWaitCoroutine());
+    }
+
+    [ClientRpc]
+    private void ClearTextClientRpc()
+    {
+        gameStatusText.text = "";
     }
 }
