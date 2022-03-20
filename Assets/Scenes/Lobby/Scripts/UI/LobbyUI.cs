@@ -126,8 +126,12 @@ namespace DapperDino.UMT.Lobby.UI
             GameNetPortal.Instance.RequestDisconnect();
         }
 
-        public void OnReadyClicked()
+        public async void OnReadyClicked()
         {
+            for (int i = 0; i < lobbyPlayers.Count; i ++)
+            {
+                Debug.Log(lobbyPlayers[i].ToString());
+            }
             ToggleReadyServerRpc();
         }
 

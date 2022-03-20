@@ -450,8 +450,8 @@ namespace StarterAssets
 				if(IsOwner){
 					SetTriggerServerRpc(_animIDisDead);
                     _isDead = true;
-                    _controller.height = 0;
-                    _controller.radius = 0;
+                    _controller.enabled = false;
+                    TurnOffControllerServerRpc(this.OwnerClientId);
 				}
 			}
         }
@@ -476,6 +476,21 @@ namespace StarterAssets
         void SetTriggerServerRpc(int x)
         {
             SetTriggerClientRpc(x);
+        }
+
+        [ServerRpc]
+        void TurnOffControllerServerRpc(ulong id)
+        {
+            TurnOffControllerClientRpc(id);
+        }
+
+        [ClientRpc]
+        void TurnOffControllerClientRpc(ulong id)
+        {
+            if(OwnerClientId == id)
+            {
+                _controller.enabled = false;
+            }
         }
 
 		[ClientRpc]
