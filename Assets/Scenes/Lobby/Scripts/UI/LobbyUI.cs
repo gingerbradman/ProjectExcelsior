@@ -132,6 +132,7 @@ namespace DapperDino.UMT.Lobby.UI
             {
                 Debug.Log(lobbyPlayers[i].ToString());
             }
+            Debug.Log(lobbyPlayers.Count);
             ToggleReadyServerRpc();
         }
 
