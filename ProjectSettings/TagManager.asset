@@ -10,6 +10,8 @@ TagManager:
   - ActivePlayer
   - Spectator
   - DeadPlayer
+  - Gold
+  - Environment
   layers:
   - Default
   - TransparentFX

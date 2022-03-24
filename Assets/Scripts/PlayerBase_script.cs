@@ -11,6 +11,8 @@ public class PlayerBase_script : NetworkBehaviour
     private int maximumHealth = 100;
     [SerializeField]
     private NetworkVariable<int> health = new NetworkVariable<int>(100);
+    [SerializeField]
+    private NetworkVariable<int> gold = new NetworkVariable<int>(0);
     private TextMeshProUGUI healthText;
     private Slider healthSlider;
     private GameManager_script gm;
@@ -55,11 +57,13 @@ public class PlayerBase_script : NetworkBehaviour
         }
 
         health.OnValueChanged += UpdateHealth;
+        gold.OnValueChanged += UpdateGold;
     }
 
     private void OnDisable()
     {
         health.OnValueChanged -= UpdateHealth;
+        gold.OnValueChanged -= UpdateGold;
     }
 
     void UpdateHealth(int oldValue, int newValue)
@@ -78,6 +82,16 @@ public class PlayerBase_script : NetworkBehaviour
         }
     }
 
+    void UpdateGold(int oldValue, int newValue)
+    {
+        if (IsOwner)
+        {
+            Debug.Log("Update Gold Function");
+            //Personal Gold Text
+
+        }
+    }
+
     public void TakeDamage(int x)
     {
         Debug.Log("TakeDamage Function");
@@ -89,6 +103,15 @@ public class PlayerBase_script : NetworkBehaviour
         {
             health.Value -= x;
         }
+    }
+
+    public void AddGold(int x)
+    {
+        Debug.Log("AddGold Function");
+
+        gold.Value += x;
+
+        gm.AddPartyGold(x);
     }
 
     public void PlayerDeath()

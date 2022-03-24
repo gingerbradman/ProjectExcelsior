@@ -33,6 +33,8 @@ public class GameManager_script : NetworkBehaviour
 
     private List<GameObject> playerAvatarList = new List<GameObject>();
     private List<GameObject> playerRoleList = new List<GameObject>();
+    [SerializeField]
+    private NetworkVariable<int> partyGold = new NetworkVariable<int>(0);
 
     void Awake()
     {
@@ -40,6 +42,16 @@ public class GameManager_script : NetworkBehaviour
         {
 
         }
+    }
+
+    private void OnEnable()
+    {
+        partyGold.OnValueChanged += UpdatePartyGold;
+    }
+
+    private void OnDisable() 
+    {
+        partyGold.OnValueChanged -= UpdatePartyGold;
     }
 
 
@@ -149,6 +161,24 @@ public class GameManager_script : NetworkBehaviour
         }
 
         StopCoroutine(NextRoundWaitCoroutine());
+    }
+
+    void UpdatePartyGold(int oldValue, int newValue)
+    {
+        if(!IsServer) { return; }
+
+        if(partyGold.Value >= 1000)
+        {
+            InnocentWinClientRpc();
+        }
+
+    }
+
+    public void AddPartyGold(int x)
+    {
+        if(!IsServer){ return; }
+
+        partyGold.Value += x;
     }
 
 

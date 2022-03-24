@@ -34,11 +34,7 @@ public class ArrowProjectile_script : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
-        if(!IsServer)
-        {
-            return;
-        }
+        if(!IsServer) { return; }
 
         NetworkObject otherNetworkObject = other.GetComponent<NetworkObject>();
 
@@ -53,24 +49,27 @@ public class ArrowProjectile_script : NetworkBehaviour
             return;
         }
 
-        if(otherNetworkObject.IsOwnedByServer)
-        {
-            NetworkObject serverPlayer = NetworkManager.Singleton.ConnectedClients[NetworkManager.Singleton.LocalClientId].PlayerObject;
-            serverPlayer.GetComponent<PlayerBase_script>().TakeDamage(damage);
+        if(other.tag == "ActivePlayer"){
+            NetworkObject otherPlayerObject = NetworkManager.Singleton.ConnectedClients[otherNetworkObject.OwnerClientId].PlayerObject;
+            otherPlayerObject.GetComponent<PlayerBase_script>().TakeDamage(damage);
             this.gameObject.GetComponent<NetworkObject>().Despawn();
             return;
         }
 
-        ProjectileCollisionServerRpc(otherNetworkObject.OwnerClientId);
-        this.gameObject.GetComponent<NetworkObject>().Despawn();
-
-
     }
+
+    /*
 
     [ServerRpc]
     void ProjectileCollisionServerRpc(ulong other)
     {
         Debug.Log("Arrow Collision");
+        ProjectileCollisionClientRpc(other);
+    }
+
+    [ClientRpc]
+    void ProjectileCollisionClientRpc(ulong other)
+    {
         NetworkObject otherNetworkObject = NetworkManager.Singleton.ConnectedClients[other].PlayerObject;
         
         if(otherNetworkObject.IsPlayerObject)
@@ -78,4 +77,5 @@ public class ArrowProjectile_script : NetworkBehaviour
             otherNetworkObject.GetComponent<PlayerBase_script>().TakeDamage(damage);            
         }
     }
+    */
 }
