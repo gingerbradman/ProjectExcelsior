@@ -19,6 +19,7 @@ public class PlayerBase_script : NetworkBehaviour
     private GameObject menuGui;
 
     private ThirdPersonController thirdPersonController;
+    private Trap_Master_script nearbyTargetedTrap;
 
     // Start is called before the first frame update
     void Start()
